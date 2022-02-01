@@ -1,0 +1,42 @@
+{
+  "name": "geo-faker",
+  "version": "1.0.0",
+  "description": "Faker.js but for geography data",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "test": "test",
+    "build": "tsc && cd dist && node ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DaviTeodoro/geo-faker.git"
+  },
+  "keywords": [
+    "geography",
+    "data",
+    "geodata",
+    "geo",
+    "faker.js"
+  ],
+  "author": "Davi Teodoro",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DaviTeodoro/geo-faker/issues"
+  },
+  "homepage": "https://github.com/DaviTeodoro/geo-faker#readme",
+  "devDependencies": {
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "@turf/bbox": "^6.5.0",
+    "@turf/bbox-polygon": "^6.5.0",
+    "@turf/circle": "^6.5.0",
+    "@turf/helpers": "^6.5.0",
+    "@turf/midpoint": "^6.5.0",
+    "@turf/point-grid": "^6.5.0"
+  }
+}
