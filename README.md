@@ -1,6 +1,11 @@
-# geo-faker
+<div align="center">
+  <h1>GeoFaker</h1>
+  <p>Some primitives to easily generate fake but deterministic geographic data.</p>
+  
+  [![npm version](https://badgen.net/npm/v/geo-faker)](https://www.npmjs.com/package/geo-faker)
+  [![npm downloads](https://badgen.net/npm/dm/geo-faker)](https://www.npmjs.com/geo-faker)
+</div>
 
-Some primitives to easily generate fake but deterministic geographic data.
 
 ## Installation
  ### npm
