@@ -15,7 +15,7 @@ Some primitives to easily generate fake but deterministic geographic data.
     - for data analysis
 
 ## How?
-    ```
+    ```js
     import pointGrid from '@turf/point-grid';
     import circle from '@turf/circle';
     import { layer, sqrBBox } from 'geo-faker';
