@@ -2,6 +2,12 @@
 
 Some primitives to easily generate fake but deterministic geographic data.
 
+## Installation
+ ### npm
+    npm install geo-faker 
+ ### yarn
+    yarn add geo-faker
+
 ## Why?
     - for testing
     - for data generation
