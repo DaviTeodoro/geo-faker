@@ -2,7 +2,7 @@ import bboxPolygon from '@turf/bbox-polygon';
 import midpoint from '@turf/midpoint';
 import * as helpers from '@turf/helpers';
 import circle from '@turf/circle';
-import pointGrid from '@turf/point-grid';
+
 import bbox from '@turf/bbox';
 
 export default {
@@ -115,17 +115,3 @@ function rectangle(square: any = {}) {
 
   return { ...square, middle, bbox };
 }
-
-// const cellSide = 10;
-
-// const grid = (extent: helpers.BBox, cellSide: number) =>
-//   layer().add([...pointGrid(extent, cellSide).features]);
-
-// const circleGrid = (extent: helpers.BBox, cellSide: number, radius: number) =>
-//   grid(extent, cellSide).map((i: any) => circle(i, radius));
-
-// console.log(
-//   circleGrid(sqrBBox([0, 0], 10), cellSide, 1)
-//     .addProperty('radius')
-//     .featureCollection()._featureCollection.features
-// );
