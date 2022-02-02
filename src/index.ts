@@ -5,21 +5,80 @@ import circle from '@turf/circle';
 import pointGrid from '@turf/point-grid';
 import bbox from '@turf/bbox';
 
-const sqr = Rectangle().bbox([1, 2, 3, 4]);
+export default {
+  layer,
+  unwarp,
+  rectangle,
+  sqrBBox,
+};
 
-const cellSide = 10;
+function sqrBBox(center: [number, number], side: number): helpers.BBox {
+  return bbox(circle(helpers.point(center), side * 2));
+}
 
-const sqrBBox = (center: [number, number], side: number): helpers.BBox =>
-  bbox(circle(helpers.point(center), side * 2));
+function layer(_layer: any = {}) {
+  const random = _layer._seed ? mulberry32(_layer._seed) : mulberry32(42);
 
-const grid = (extent: helpers.BBox, cellSide: number) =>
-  Layer().add([...pointGrid(extent, cellSide).features]);
+  function featureCollection() {
+    const newLayer = {
+      ..._layer,
+      _featureCollection: helpers.featureCollection(_layer.features),
+    };
+    return layer(newLayer);
+  }
 
-const circleGrid = (extent: helpers.BBox, cellSide: number, radius: number) =>
-  grid(extent, cellSide).map((i: any) => circle(i, radius));
+  function add(featuresArr: any) {
+    const { features } = _layer.features ? _layer : { features: [] };
 
-console.log(sqrBBox([0, 0], 100));
-console.log(circleGrid(sqrBBox([0, 0], 10), cellSide, 1));
+    const newLayer = { ..._layer, features: [...features, ...featuresArr] };
+    return layer(newLayer);
+  }
+
+  function map(scale: Function) {
+    const { features } = _layer.features ? _layer : { features: [] };
+    const newLayer = {
+      ..._layer,
+      features: features.map(scale),
+    };
+    return layer(newLayer);
+  }
+
+  function seed(seed: number) {
+    const newLayer = { ..._layer, _seed: seed };
+    return layer(newLayer);
+  }
+
+  function addProperty(prop: string) {
+    const { features } = _layer.features ? _layer : { features: [] };
+    const newLayer = {
+      ..._layer,
+      features: features.map((feature: any) => {
+        const newFeature = {
+          ...feature,
+          properties: { ...feature.properties, [prop]: random() },
+        };
+        return newFeature;
+      }),
+    };
+    return layer(newLayer);
+  }
+
+  function unwarp() {
+    return helpers.featureCollection(_layer.features);
+  }
+
+  return {
+    type: 'FeatureCollection',
+    ..._layer,
+    add,
+    featureCollection,
+    map,
+    seed,
+    random,
+    addProperty,
+    unwarp,
+  };
+}
 
 function mulberry32(a: any) {
   return function () {
@@ -34,7 +93,7 @@ function unwarp(struct: any, method: string, ...args: any) {
   return struct[method](...args)[`_${method}`];
 }
 
-function Rectangle(square: any = {}) {
+function rectangle(square: any = {}) {
   function middle() {
     const { _bbox } = square;
     const p1 = [_bbox[0], _bbox[1]];
@@ -42,45 +101,31 @@ function Rectangle(square: any = {}) {
     const _midpoint = midpoint(helpers.point(p1), helpers.point(p2));
     const newSquare = { ...square, _middle: _midpoint };
 
-    return Rectangle(newSquare);
+    return rectangle(newSquare);
   }
 
   function bbox(arr: helpers.BBox) {
-    const newSquare: typeof Rectangle = {
+    const newSquare: typeof rectangle = {
       ...square,
       _bbox: arr,
       ...bboxPolygon(arr),
     };
-    return Rectangle(newSquare);
+    return rectangle(newSquare);
   }
 
   return { ...square, middle, bbox };
 }
 
-function Layer(layer: any = {}) {
-  function featureCollection() {
-    const newLayer = {
-      ...layer,
-      _featureCollection: helpers.featureCollection(layer.features),
-    };
-    return Layer(newLayer);
-  }
+// const cellSide = 10;
 
-  function add(featuresArr: any) {
-    const { features } = layer.features ? layer : { features: [] };
+// const grid = (extent: helpers.BBox, cellSide: number) =>
+//   layer().add([...pointGrid(extent, cellSide).features]);
 
-    const newLayer = { ...layer, features: [...features, ...featuresArr] };
-    return Layer(newLayer);
-  }
+// const circleGrid = (extent: helpers.BBox, cellSide: number, radius: number) =>
+//   grid(extent, cellSide).map((i: any) => circle(i, radius));
 
-  function map(scale: Function) {
-    const { features } = layer.features ? layer : { features: [] };
-    const newLayer = {
-      ...layer,
-      features: features.map(scale),
-    };
-    return Layer(newLayer);
-  }
-
-  return { ...layer, add, featureCollection, map };
-}
+// console.log(
+//   circleGrid(sqrBBox([0, 0], 10), cellSide, 1)
+//     .addProperty('radius')
+//     .featureCollection()._featureCollection.features
+// );
