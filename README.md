@@ -20,7 +20,8 @@
     - for data analysis
 
 ## How?
-    ```js
+
+```js
     import pointGrid from '@turf/point-grid';
     import circle from '@turf/circle';
     import { layer, sqrBBox } from 'geo-faker';
@@ -36,4 +37,4 @@
         .unwarp()
     
     console.log(featureCollection);
-    ```
+ ```
