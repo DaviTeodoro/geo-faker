@@ -1,6 +1,6 @@
 {
   "name": "geo-faker",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Faker.js but for geography data",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
