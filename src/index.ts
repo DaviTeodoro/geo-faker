@@ -3,6 +3,8 @@ import midpoint from '@turf/midpoint';
 import * as helpers from '@turf/helpers';
 import circle from '@turf/circle';
 
+import SimplexNoise from 'simplex-noise';
+
 import bbox from '@turf/bbox';
 
 export default {
@@ -18,6 +20,9 @@ function sqrBBox(center: [number, number], side: number): helpers.BBox {
 
 function layer(_layer: any = {}) {
   const random = _layer._seed ? mulberry32(_layer._seed) : mulberry32(42);
+  const noise = _layer._seed
+    ? new SimplexNoise(_layer._seed)
+    : new SimplexNoise();
 
   function featureCollection() {
     const newLayer = {
@@ -48,16 +53,40 @@ function layer(_layer: any = {}) {
     return layer(newLayer);
   }
 
-  function addProperty(prop: string) {
+  interface AddPropertySettings {
+    type: string;
+  }
+
+  function addProperty(
+    prop: string,
+    config: AddPropertySettings = { type: 'random' }
+  ) {
     const { features } = _layer.features ? _layer : { features: [] };
+    const { type } = config;
     const newLayer = {
       ..._layer,
       features: features.map((feature: any) => {
-        const newFeature = {
-          ...feature,
-          properties: { ...feature.properties, [prop]: random() },
-        };
-        return newFeature;
+        if (type === 'random') {
+          const newFeature = {
+            ...feature,
+            properties: { ...feature.properties, [prop]: random() },
+          };
+          return newFeature;
+        } else if (type === 'noise') {
+          const featureCenterPointCoords = center(feature).geometry.coordinates; // this may be slow...
+
+          const newFeature = {
+            ...feature,
+            properties: {
+              ...feature.properties,
+              [prop]: noise.noise2D(
+                featureCenterPointCoords[0],
+                featureCenterPointCoords[1]
+              ),
+            },
+          };
+          return newFeature;
+        }
       }),
     };
     return layer(newLayer);
@@ -91,6 +120,17 @@ function mulberry32(a: any) {
 
 function unwarp(struct: any, method: string, ...args: any) {
   return struct[method](...args)[`_${method}`];
+}
+
+function center(feature: any) {
+  if (feature.geometry.type === 'Point') return feature;
+
+  const featureBBox = bbox(feature);
+
+  // the segment p1-p2 is the diagonal of the square
+  const p1 = [featureBBox[0], featureBBox[1]];
+  const p2 = [featureBBox[2], featureBBox[3]];
+  return midpoint(helpers.point(p1), helpers.point(p2));
 }
 
 function rectangle(square: any = {}) {
